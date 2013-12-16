@@ -218,11 +218,7 @@ public class Visualiser {
 		Calendar timeStamp = last.getTimeStamp();
 		ClinicianLabel l = new ClinicianLabel(last.getTimeStamp(),last.getPSS());
 		String temp = (String)newPSSCombo.getSelectedItem();
-		if(temp.length()>0) {
-			l.setRevisedPSS(temp.charAt(0));
-		} else {
-			l.setRevisedPSS(last.getPSS()); // Fix this
-		}
+		l.setRevisedPSS(temp.charAt(0));
 		l.setAnnotation(newPSSannotation.getText());
 		
 		clinician.addLabel(l);
