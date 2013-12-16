@@ -8,6 +8,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import java.util.Enumeration;
 import java.util.Calendar;
 import javax.swing.JButton;
@@ -21,7 +25,7 @@ import javax.swing.JCheckBox;
 public class Visualiser {
 	private JFrame myFrame;
 	private ParseCSV pc;
-	private JPanel myPanel,buttonPanel,checkBoxPanel;
+	private JPanel myPanel,buttonPanel,checkBoxPanel,PSSPanel;
 	private DefaultTableModel tableModel;
 	private JScrollPane myScrollPane;
 	private JTable myTable;
@@ -31,7 +35,9 @@ public class Visualiser {
 	private int nStep = 5;
 	private JCheckBox[] cbArray;
 	private ClinicianOutput clinician;
-	
+	private JLabel currentPSSLabel;
+	private JTextField newPSSannotation;
+	private JComboBox newPSSCombo;
 	public Visualiser(String fname)
 	{
 		
@@ -87,11 +93,23 @@ public class Visualiser {
 		}
 
 		//Create the add and remove buttons
-		addButton = new JButton("Add");
+		addButton = new JButton("Next...");
 		removeButton = new JButton("Remove");
 		buttonPanel = new JPanel(new GridLayout(0,2));
 		buttonPanel.add(addButton);
-		buttonPanel.add(removeButton);
+		//buttonPanel.add(removeButton); No remove button
+		currentPSSLabel = new JLabel("XXX");
+		PSSPanel = new JPanel(new GridLayout(0,6));
+		PSSPanel.add(new JLabel("Current PSS:"));
+		PSSPanel.add(currentPSSLabel);
+		String[] PSSChars = { "","A", "B", "C", "D", "E" };
+		newPSSCombo = new JComboBox(PSSChars);
+		PSSPanel.add(new JLabel("Choose new PSS:"));
+		PSSPanel.add(newPSSCombo);
+		newPSSannotation = new JTextField("");
+		PSSPanel.add(new JLabel("Annotation (optional):"));
+		PSSPanel.add(newPSSannotation);
+		buttonPanel.add(PSSPanel);
 		myPanel.add(buttonPanel,BorderLayout.SOUTH);
 		
 		//Create the checkboxpanel
@@ -121,6 +139,25 @@ public class Visualiser {
 					System.out.println("Add");
 					//Check if this is the first
 					if(tableModel.getRowCount()>0) {
+						if(newPSSCombo.getSelectedIndex()==0) {
+							// Haven't selected anything
+							JOptionPane.showMessageDialog(myFrame, "You must enter a new PSS score before viewing more data");
+							return;
+						}
+						if(newPSSannotation.getText().length()==0) {
+							// Present a dialog asking for an (optional annotation)
+							String s = (String)JOptionPane.showInputDialog(
+				                    myFrame,
+				                    "You haven't annotated your new PSS score. If you would like to, do so here, or press cancel to return",
+				                    "Customized Dialog",
+				                    JOptionPane.PLAIN_MESSAGE);
+							if(s==null) {
+								return;
+							} else {
+								newPSSannotation.setText(s);
+							}
+						}
+
 						addRowToClinician();
 					}
 					addRows();
@@ -167,7 +204,7 @@ public class Visualiser {
 		//Attach listeners to the buttons
 		MyListener ml = new MyListener();
 		addButton.addActionListener(ml);
-		removeButton.addActionListener(ml);
+		//removeButton.addActionListener(ml);
 		selectAllButton.addActionListener(ml);
 		deselectAllButton.addActionListener(ml);
 
@@ -180,8 +217,14 @@ public class Visualiser {
 		Record last = pc.getRecord(nRows-1);
 		Calendar timeStamp = last.getTimeStamp();
 		ClinicianLabel l = new ClinicianLabel(last.getTimeStamp(),last.getPSS());
-		l.setRevisedPSS('B');
-		l.setAnnotation("blah");
+		String temp = (String)newPSSCombo.getSelectedItem();
+		if(temp.length()>0) {
+			l.setRevisedPSS(temp.charAt(0));
+		} else {
+			l.setRevisedPSS(last.getPSS()); // Fix this
+		}
+		l.setAnnotation(newPSSannotation.getText());
+		
 		clinician.addLabel(l);
 		System.out.println("" + clinician.size() + ":" + clinician.getString(clinician.size()-1));
 	}
@@ -222,6 +265,10 @@ public class Visualiser {
 				temp[j] = current.getValue(headers[j]);
 			}
 			tableModel.addRow(temp);
+			// Extract the PSS information
+			currentPSSLabel.setText((String)current.getValue("PSS"));
+			newPSSCombo.setSelectedIndex(0);
+			newPSSannotation.setText("");
 		}
 		myTable.scrollRectToVisible(myTable.getCellRect(nRows, 0, true));
 	}

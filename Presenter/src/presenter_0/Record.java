@@ -22,7 +22,8 @@ public class Record {
 		return timeStamp.get(Calendar.HOUR);
 	}
 	public char getPSS() {
-		return 'A';
+		String temp = (String)getValue("PSS");
+		return temp.charAt(0);
 	}
 	public int getMinute()
 	{
