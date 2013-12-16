@@ -237,6 +237,8 @@ public class Visualiser {
 		// adds nStep rows
 		for(int i=0;i<nStep;i++)
 		{
+			// Need a check here to see if there are enough rows left to add
+			// Question for DS: what happens when we get to the end?
 			addNextRow();
 		}
 	}
