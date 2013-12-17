@@ -38,7 +38,7 @@ public class Visualiser {
 	private JLabel currentPSSLabel;
 	private JTextField newPSSannotation;
 	private JComboBox newPSSCombo;
-	public Visualiser(String fname)
+	public Visualiser(String fname,String thisCLinician)
 	{
 		
 		//Display file selector dialog
@@ -299,6 +299,6 @@ public class Visualiser {
 	
 	public static void main(String[] args)
 	{
-		Visualiser v = new Visualiser(null);
+		Visualiser v = new Visualiser(null,"Fred");
 	}
 }
