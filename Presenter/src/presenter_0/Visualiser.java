@@ -164,8 +164,9 @@ public class Visualiser {
 						System.out.println("Reached end of file");
 						// Write out the clinician file
 						clinician.writeFile("testfile.csv");
+						myFrame.dispose();
 						// Exit the frame?
-						System.exit(0);
+						// System.exit(0);
 					}
 				}
 				else if(e.getSource() == removeButton)
