@@ -3,6 +3,7 @@ package presenter_0;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.io.*;
 
 public class ClinicianOutput {
 	
@@ -32,6 +33,18 @@ public class ClinicianOutput {
 	}
 	public String getCreationStamp() {
 		return PresenterUtilities.prettyDate(creationStamp);
+	}
+	public void writeFile(String fname) {
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(fname));
+			for(int i=0;i<labels.size();i++) {
+				writer.write(labels.get(i).prettyString() + "\n");
+			}
+			writer.close();
+			
+		} catch(IOException e) {
+			System.out.println("Unable to open file");
+		}
 	}
 	
 }

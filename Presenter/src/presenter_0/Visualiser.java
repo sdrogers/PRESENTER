@@ -160,7 +160,13 @@ public class Visualiser {
 
 						addRowToClinician();
 					}
-					addRows();
+					if(addRows()==false) {
+						System.out.println("Reached end of file");
+						// Write out the clinician file
+						clinician.writeFile("testfile.csv");
+						// Exit the frame?
+						System.exit(0);
+					}
 				}
 				else if(e.getSource() == removeButton)
 				{
@@ -208,7 +214,7 @@ public class Visualiser {
 		selectAllButton.addActionListener(ml);
 		deselectAllButton.addActionListener(ml);
 
-		myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		myFrame.setVisible(true);	
 
 	}
@@ -232,15 +238,21 @@ public class Visualiser {
 			tableModel.removeRow(nRows-1);
 		}
 	}
-	private void addRows()
+	private boolean addRows()
 	{
 		// adds nStep rows
 		for(int i=0;i<nStep;i++)
 		{
 			// Need a check here to see if there are enough rows left to add
 			// Question for DS: what happens when we get to the end?
-			addNextRow();
+			int nRows = tableModel.getRowCount();
+			if(nRows<pc.getSize()){
+				addNextRow();
+			} else {
+				return false;
+			}
 		}
+		return true;
 	}
 	private void removeRows()
 	{
