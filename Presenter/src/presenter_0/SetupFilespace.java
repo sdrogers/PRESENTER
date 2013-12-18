@@ -7,7 +7,7 @@ public class SetupFilespace {
 	public SetupFilespace() {
 		ArrayList<String> clins = loadClinicians();
 		// Get a list of patient files
-		File[] fileList = new File("./patientfiles/").listFiles();
+		File[] fileList = new File("." + File.separator + "patientfiles" + File.separator).listFiles();
 		for(int i=0;i<fileList.length;i++) {
 			System.out.println(fileList[i].getPath());
 		}
