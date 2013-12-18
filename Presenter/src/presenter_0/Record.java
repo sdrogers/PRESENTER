@@ -88,5 +88,16 @@ public class Record {
 			return values.get(a);
 		}
 	}
+	public String getString(String[] heads) {
+		String temp = getDateTime();
+		for(int i=1;i<heads.length;i++) { //Assumes first entry is charttime
+			String a = (String)getValue(heads[i]);
+			temp += ",";
+			if(a!=null) {
+				temp += a;
+			}
+		}
+		return temp;
+	}
 	
 }

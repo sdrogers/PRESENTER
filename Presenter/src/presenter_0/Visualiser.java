@@ -29,7 +29,7 @@ import java.awt.GridLayout;
 import javax.swing.JCheckBox;
 public class Visualiser {
 	private JFrame myFrame;
-	private ParseCSV pc;
+	private ParseCSV pc,clinician;
 	private JPanel myPanel,buttonPanel,checkBoxPanel,PSSPanel;
 	private DefaultTableModel tableModel;
 	private JScrollPane myScrollPane;
@@ -38,14 +38,14 @@ public class Visualiser {
 	XTableColumnModel xTM;
 	private int nStep = 5;
 	private JCheckBox[] cbArray;
-	private ClinicianOutput clinician;
 	private JLabel currentPSSLabel;
 	private JTextField newPSSannotation;
 	private JComboBox<String> newPSSCombo;
-	private String[] headers = {"ChartTime","FiO2","SpO2","Adrenaline","Noradrenaline","MAP","NIBPMean",
+	private String[] headers = {"ChartTime","PSS","Revised PSS","FiO2","SpO2","Adrenaline","Noradrenaline","MAP","NIBPMean",
 			"HR","Urine","Propofol","Alfentanil","Morphine","VentilatorMode","Airway","H","Lactate",
-			"SVO2","Creatinine","CRP","WBC","PT","Platelets","Glucose","Troponin","PSS"};
+			"SVO2","Creatinine","CRP","WBC","PT","Platelets","Glucose","Troponin","Notes"};
 	private String thisClinician,currentFile;
+	private int notesCol,revisedPSScol;
 	public Visualiser(String thisC)
 	{
 		
@@ -64,6 +64,16 @@ public class Visualiser {
 //				System.exit(0);
 //			}
 //		}
+		
+		for(int i=0;i<headers.length;i++) {
+			if(headers[i].equals("Notes")) {
+				notesCol = i;
+			}
+			if(headers[i].equals("Revised PSS")) {
+				revisedPSScol = i;
+			}
+		}
+		
 		thisClinician = thisC;
 		setupComponents();
 		
@@ -79,7 +89,7 @@ public class Visualiser {
 		}
 		myFrame.setTitle(currentFile);
 		pc = new ParseCSV(currentFile);
-		clinician = new ClinicianOutput();
+		clinician = new ParseCSV(headers);
 		tableModel.setNumRows(0);
 		addRows();
 	}
@@ -310,15 +320,22 @@ public class Visualiser {
 	}
 	private void addRowToClinician() {
 		int nRows = tableModel.getRowCount();
-		Record last = pc.getRecord(nRows-1);
+		Record last = clinician.getRecord(nRows-1);
 		Calendar timeStamp = last.getTimeStamp();
-		ClinicianLabel l = new ClinicianLabel(last.getTimeStamp(),last.getPSS());
-		String temp = (String)newPSSCombo.getSelectedItem();
-		l.setRevisedPSS(temp.charAt(0));
-		l.setAnnotation(newPSSannotation.getText());
 		
-		clinician.addLabel(l);
-		System.out.println("" + clinician.size() + ":" + clinician.getString(clinician.size()-1));
+//		ClinicianLabel l = new ClinicianLabel(last.getTimeStamp(),last.getPSS());
+		String temp = (String)newPSSCombo.getSelectedItem();
+		
+		last.setValue("Revised PSS",temp);
+		last.setValue("Notes",newPSSannotation.getText());
+//		l.setRevisedPSS(temp.charAt(0));
+//		l.setAnnotation(newPSSannotation.getText());
+		
+		tableModel.setValueAt(temp,tableModel.getRowCount()-1,revisedPSScol);
+		tableModel.setValueAt(newPSSannotation.getText(),tableModel.getRowCount()-1,notesCol);
+		
+		//clinician.addRecord(last);
+		System.out.println(last.getString(headers));
 	}
 	private void removeLastRow()
 	{
@@ -369,6 +386,7 @@ public class Visualiser {
 			currentPSSLabel.setText((String)current.getValue("PSS"));
 			newPSSCombo.setSelectedIndex(0);
 			newPSSannotation.setText("");
+			clinician.addRecord(current); //Add the row to the clinician object
 		}
 		myTable.scrollRectToVisible(myTable.getCellRect(nRows, 0, true));
 	}
@@ -386,8 +404,8 @@ public class Visualiser {
 		}
 	}
 	
-	public static void main(String[] args)
-	{
-		Visualiser v = new Visualiser("Fred");
-	}
+//	public static void main(String[] args)
+//	{
+//		Visualiser v = new Visualiser("Fred");
+//	}
 }

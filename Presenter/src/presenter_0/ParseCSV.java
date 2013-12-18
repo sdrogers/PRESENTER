@@ -13,6 +13,45 @@ public class ParseCSV {
 		fileName = name;
 		readFile();
 	}
+	public ParseCSV(String[] headsin) {
+		// Constructor when list isn't created from a CSV
+		headers = headsin;
+	}
+	public void writeFile(String fName) {
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(fName));
+			//Write the headers
+			String line = "";
+			for(int i=0;i<headers.length;i++) {
+				line += headers[i];
+				if(i<headers.length-1) {
+					line += ",";
+				}
+			}
+			writer.write(line + "\n");
+			
+			// Write the records
+			for(int i=0;i<recordList.size();i++) {
+				Record thisRecord = recordList.get(i);
+				line = thisRecord.getDateTime();
+				for(int j=1;j<headers.length;j++) {
+					String a = (String)thisRecord.getValue(headers[j]);
+					line += ",";
+					if(a!=null) {
+						line += a;
+					}
+				}
+				writer.write(line + "\n");
+			}
+			
+			writer.close();
+		}catch(IOException e) {
+			System.out.println("Unable to open " + fName);
+		}
+	}
+	public void addRecord(Record in) {
+		recordList.add(in);
+	}
 	
 	public ArrayList<Record> getRecordList()
 	{
