@@ -186,12 +186,12 @@ public class Visualiser {
 					if(addRows()==false) {
 						System.out.println("Reached end of file");
 						// Write out the clinician file
-						clinician.writeFile("testfile.csv");
+						clinician.writeFile(""+thisClinician + "." + currentFile);
 						// Update the task file
 						int todoCount = updateTaskFile();
 						Object[] options = {"Yes","No"};
 						if(todoCount==0) {
-							JOptionPane.showMessageDialog(myFrame, "All patient records examines");
+							JOptionPane.showMessageDialog(myFrame, "All patient records examined");
 							System.exit(0);
 						} else {
 							int s = JOptionPane.showOptionDialog(myFrame,"Would you like to do another patient?",null,JOptionPane.YES_NO_OPTION,
