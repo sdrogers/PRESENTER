@@ -1,6 +1,7 @@
 package presenter_0;
 import java.util.ArrayList;
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.*;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,15 +13,19 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+
 import java.util.Enumeration;
 import java.util.Calendar;
+
 import javax.swing.JButton;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+
 import javax.swing.JCheckBox;
 public class Visualiser {
 	private JFrame myFrame;
@@ -29,7 +34,6 @@ public class Visualiser {
 	private DefaultTableModel tableModel;
 	private JScrollPane myScrollPane;
 	private JTable myTable;
-	private String[] headers;
 	private JButton addButton,removeButton,selectAllButton,deselectAllButton;
 	XTableColumnModel xTM;
 	private int nStep = 5;
@@ -37,39 +41,58 @@ public class Visualiser {
 	private ClinicianOutput clinician;
 	private JLabel currentPSSLabel;
 	private JTextField newPSSannotation;
-	private JComboBox newPSSCombo;
-	public Visualiser(String fname,String thisCLinician)
+	private JComboBox<String> newPSSCombo;
+	private String[] headers = {"ChartTime","FiO2","SpO2","Adrenaline","Noradrenaline","MAP","NIBPMean",
+			"HR","Urine","Propofol","Alfentanil","Morphine","VentilatorMode","Airway","H","Lactate",
+			"SVO2","Creatinine","CRP","WBC","PT","Platelets","Glucose","Troponin","PSS"};
+	private String thisClinician,currentFile;
+	public Visualiser(String thisC)
 	{
 		
-		//Display file selector dialog
-		if(fname == null)
-		{
-			final JFileChooser fc = new JFileChooser();
-			int returnVal = fc.showOpenDialog(null);
-			if(returnVal == JFileChooser.APPROVE_OPTION)
-			{
-				File f = fc.getSelectedFile();
-				fname = f.getPath();
-			}
-			else
-			{
-				System.exit(0);
-			}
+//		//Display file selector dialog
+//		if(fname == null)
+//		{
+//			final JFileChooser fc = new JFileChooser();
+//			int returnVal = fc.showOpenDialog(null);
+//			if(returnVal == JFileChooser.APPROVE_OPTION)
+//			{
+//				File f = fc.getSelectedFile();
+//				fname = f.getPath();
+//			}
+//			else
+//			{
+//				System.exit(0);
+//			}
+//		}
+		thisClinician = thisC;
+		setupComponents();
+		
+		loadFile();
+		
+
+	}
+	private void loadFile() {
+		currentFile = getNextFile(thisClinician);
+		if(currentFile == null) {
+			JOptionPane.showMessageDialog(myFrame, "Task file completed");
+			System.exit(0);
 		}
-		
-		pc = new ParseCSV(fname);
+		myFrame.setTitle(currentFile);
+		pc = new ParseCSV(currentFile);
 		clinician = new ClinicianOutput();
-		
-		
+		tableModel.setNumRows(0);
+		addRows();
+	}
+	private void setupComponents() {
 		myFrame = new JFrame();
 		myFrame.setSize(1000,1000);
-		myFrame.setTitle(fname);
+		
 		
 		myPanel = new JPanel(new BorderLayout());
 		myFrame.add(myPanel);
 		
 		//Create the table things
-		headers = pc.getHeaders();
+		//headers = pc.getHeaders();
 		tableModel = new DefaultTableModel(null,headers);
 		myTable = new JTable(tableModel);
 		myScrollPane = new JScrollPane(myTable);
@@ -164,9 +187,21 @@ public class Visualiser {
 						System.out.println("Reached end of file");
 						// Write out the clinician file
 						clinician.writeFile("testfile.csv");
-						myFrame.dispose();
-						// Exit the frame?
-						// System.exit(0);
+						// Update the task file
+						int todoCount = updateTaskFile();
+						Object[] options = {"Yes","No"};
+						if(todoCount==0) {
+							JOptionPane.showMessageDialog(myFrame, "All patient records examines");
+							System.exit(0);
+						} else {
+							int s = JOptionPane.showOptionDialog(myFrame,"Would you like to do another patient?",null,JOptionPane.YES_NO_OPTION,
+									JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+							if(s==JOptionPane.OK_OPTION) {
+								loadFile();
+							} else {
+								System.exit(0);
+							}
+						}
 					}
 				}
 				else if(e.getSource() == removeButton)
@@ -217,7 +252,60 @@ public class Visualiser {
 
 		myFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		myFrame.setVisible(true);	
-
+	}
+	private int updateTaskFile() {
+		int todoCount = 0;
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(""+thisClinician+".tasks"));
+			ArrayList<String> filelines = new ArrayList<String>();
+			String temp;
+			int pos = 0;
+			while((temp = reader.readLine())!=null){
+				filelines.add(temp);
+			}
+			reader.close();
+			
+			BufferedWriter writer = new BufferedWriter(new FileWriter(""+thisClinician+".tasks"));
+			for(int i=0;i<filelines.size();i++) {
+				String[] split = filelines.get(i).split("\t");
+				if(split[0].equals(currentFile)) {
+					writer.write(split[0]+"\t" + "Done\n"); 
+				}else {
+					writer.write(filelines.get(i) + "\n");
+					if(split.length==1) {
+						todoCount ++;
+					}
+				}
+			}
+			writer.close();
+			
+			
+		}catch(IOException e) {
+			System.out.println("Unable to open task file");
+		}
+		return todoCount;
+	}
+	private String getNextFile(String clinName) {
+		String clinFileName = clinName + ".tasks";
+		String nextFile = null;
+		try{
+			BufferedReader reader = new BufferedReader(new FileReader(clinFileName));
+			String temp;
+			while((temp = reader.readLine())!=null) {
+				String[] split = temp.split("\t");
+				if(split.length==1) {
+					nextFile = split[0];					
+					reader.close();
+					return nextFile;
+				}
+			}
+			reader.close();
+		}catch(IOException e) {
+			System.out.println(e);
+			System.out.println("Unable to load "+clinFileName);
+			System.exit(0);
+		}
+		return nextFile;
 	}
 	private void addRowToClinician() {
 		int nRows = tableModel.getRowCount();
@@ -299,6 +387,6 @@ public class Visualiser {
 	
 	public static void main(String[] args)
 	{
-		Visualiser v = new Visualiser(null,"Fred");
+		Visualiser v = new Visualiser("Fred");
 	}
 }

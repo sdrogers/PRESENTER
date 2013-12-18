@@ -39,35 +39,11 @@ public class Presenter {
 		}
 		if(passed) {
 			System.out.println("Verification passed");
-			String patientFile = getNextFile(thisClinician);
-			Visualiser v = new Visualiser(patientFile,thisClinician);
-			System.out.println(patientFile);
+			Visualiser v = new Visualiser(thisClinician);
 		}else {
 			System.out.println("Verification failed");
 			System.exit(0);
 		}
-	}
-	private String getNextFile(String clinName) {
-		String clinFileName = clinName + ".tasks";
-		String nextFile = null;
-		try{
-			BufferedReader reader = new BufferedReader(new FileReader(clinFileName));
-			String temp;
-			while((temp = reader.readLine())!=null) {
-				String[] split = temp.split("\t");
-				if(split.length==1) {
-					nextFile = split[0];					
-					reader.close();
-					return nextFile;
-				}
-			}
-			reader.close();
-		}catch(IOException e) {
-			System.out.println(e);
-			System.out.println("Unable to load "+clinFileName);
-			System.exit(0);
-		}
-		return nextFile;
 	}
 	private String[] loadClinNames(String fName) {
 		String[] a;
