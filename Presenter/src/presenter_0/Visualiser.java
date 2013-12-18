@@ -46,25 +46,7 @@ public class Visualiser {
 			"SVO2","Creatinine","CRP","WBC","PT","Platelets","Glucose","Troponin","Notes"};
 	private String thisClinician,currentFile;
 	private int notesCol,revisedPSScol;
-	public Visualiser(String thisC)
-	{
-		
-//		//Display file selector dialog
-//		if(fname == null)
-//		{
-//			final JFileChooser fc = new JFileChooser();
-//			int returnVal = fc.showOpenDialog(null);
-//			if(returnVal == JFileChooser.APPROVE_OPTION)
-//			{
-//				File f = fc.getSelectedFile();
-//				fname = f.getPath();
-//			}
-//			else
-//			{
-//				System.exit(0);
-//			}
-//		}
-		
+	public Visualiser(String thisC) {
 		for(int i=0;i<headers.length;i++) {
 			if(headers[i].equals("Notes")) {
 				notesCol = i;
@@ -73,13 +55,9 @@ public class Visualiser {
 				revisedPSScol = i;
 			}
 		}
-		
 		thisClinician = thisC;
-		setupComponents();
-		
+		setupComponents();	
 		loadFile();
-		
-
 	}
 	private void loadFile() {
 		currentFile = getNextFile(thisClinician);
@@ -95,9 +73,7 @@ public class Visualiser {
 	}
 	private void setupComponents() {
 		myFrame = new JFrame();
-		myFrame.setSize(1000,1000);
-		
-		
+		myFrame.setSize(500,500);
 		myPanel = new JPanel(new BorderLayout());
 		myFrame.add(myPanel);
 		
@@ -112,15 +88,13 @@ public class Visualiser {
 		//Set the special tablecolumnmodel that allows for adding and removing columns
 		xTM = new XTableColumnModel();
 		Enumeration<TableColumn> en = myTable.getColumnModel().getColumns();
-		while(en.hasMoreElements())
-		{
+		while(en.hasMoreElements()) {
 			xTM.addColumn(en.nextElement());
 		}
 		myTable.setColumnModel(xTM);
 		//Set the cell renderer
 		en = myTable.getColumnModel().getColumns();
-		while (en.hasMoreElements())
-		{
+		while (en.hasMoreElements()) {
 			TableColumn tc = en.nextElement();
 			tc.setCellRenderer(new myCellRenderer());
 		}
