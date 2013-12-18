@@ -1,7 +1,7 @@
 package presenter_0;
 import java.util.ArrayList;
-import java.io.BufferedReader;
 import java.io.*;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -186,7 +186,8 @@ public class Visualiser {
 					if(addRows()==false) {
 						System.out.println("Reached end of file");
 						// Write out the clinician file
-						clinician.writeFile(""+thisClinician + "." + currentFile);
+						String[] split = currentFile.split(File.separator);
+						clinician.writeFile("." + File.separator + "outputfiles" + File.separator+thisClinician + "." + split[split.length-1]);
 						// Update the task file
 						int todoCount = updateTaskFile();
 						Object[] options = {"Yes","No"};
