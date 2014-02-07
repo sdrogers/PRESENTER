@@ -1,5 +1,6 @@
 package presenter_0;
 import java.io.*;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ public class ParseCSV {
 	private String[] headers = null;
 	private String defHeadName = "head.csv";
 	private ArrayList<Record> recordList = new ArrayList<Record>();
+	private ArrayList<String> headList;
 	public ParseCSV(String name)
 	{
 		fileName = name;
@@ -33,8 +35,9 @@ public class ParseCSV {
 			// Write the records
 			for(int i=0;i<recordList.size();i++) {
 				Record thisRecord = recordList.get(i);
-				line = thisRecord.getDateTime();
-				for(int j=1;j<headers.length;j++) {
+				//line = thisRecord.getDateTime();
+				line = "";
+				for(int j=0;j<headers.length;j++) {
 					String a = (String)thisRecord.getValue(headers[j]);
 					line += ",";
 					if(a!=null) {
@@ -77,21 +80,31 @@ public class ParseCSV {
 			System.out.println("File opened");
 			String line = in.readLine(); // Read the headers
 			headers = line.split(",");
+			headList = new ArrayList<String>(Arrays.asList(headers));
 			while((line = in.readLine())!=null)
 			{
-				//System.out.println(line);
+				System.out.println(line);
 
 				String[] items = line.split(",");
 				Calendar thisDate = new GregorianCalendar();
-				PresenterUtilities.formatDate(thisDate,items[0]);
+				// Find the index of the 'time' entry
+				int timeIndex = headList.indexOf("Time");
+				PresenterUtilities.formatDate(thisDate,items[timeIndex]);
 				recordList.add(new Record(thisDate));
 				Record currentRecord = recordList.get(recordList.size()-1);
 				//System.out.println("Items: " + items.length);
-				for(int i=1;i<items.length;i++)
+				for(int i=0;i<items.length;i++)
 				{
-					if(items[i].length()>0)
+					if(headers[i].equals("Time"))
 					{
-						currentRecord.setValue(headers[i],items[i]);
+						//Nothing
+					}
+					else
+					{
+						if(items[i].length()>0)
+						{
+							currentRecord.setValue(headers[i],items[i]);
+						}
 					}
 				}
 				//System.out.println(currentRecord.getTime());

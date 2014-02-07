@@ -1,4 +1,4 @@
-package presenter_0;
+	package presenter_0;
 import java.util.ArrayList;
 import java.io.*;
 public class FileMerger {
@@ -26,13 +26,20 @@ public class FileMerger {
 			for(int i=0;i<pc.getSize();i++)
 			{
 				Record current = pc.getRecord(i);
-				tempString[0] = current.getDateTime();
-				for(int j=1;j<headers.length;j++)
+				//tempString[0] = current.getDateTime();
+				for(int j=0;j<headers.length;j++)
 				{
-					Object tempObject = current.getValue(headers[j]);
-					if(tempObject!=null)
+					if(headers[j].equals("Time"))
 					{
-						tempString[j] = tempObject.toString(); // Update to the most recent value
+						tempString[j] = current.getDateTime();
+					}
+					else
+					{
+						Object tempObject = current.getValue(headers[j]);
+						if(tempObject!=null)
+						{
+							tempString[j] = tempObject.toString(); // Update to the most recent value
+						}
 					}
 				}
 				// Only write if it is an nice hour
@@ -58,6 +65,6 @@ public class FileMerger {
 	
 	public static void main(String[] args)
 	{
-		FileMerger fm = new FileMerger("test.csv");
+		FileMerger fm = new FileMerger("originalfiles/InitialDataset-7318-H2-classified-ds.csv");
 	}
 }

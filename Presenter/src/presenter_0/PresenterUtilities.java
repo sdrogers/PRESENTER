@@ -6,6 +6,7 @@ public class PresenterUtilities {
 	public static void formatDate(Calendar formattedDate,String unformattedDate)
 	{
 		String[] date = unformattedDate.split(" ")[0].split("/");
+		System.out.println(unformattedDate);
 		int year = Integer.parseInt(date[2]);
 		int day = Integer.parseInt(date[0]);
 		int month = Integer.parseInt(date[1]);
