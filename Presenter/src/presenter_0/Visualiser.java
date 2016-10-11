@@ -41,13 +41,18 @@ public class Visualiser {
 	private JLabel currentPSSLabel;
 	private JTextField newPSSannotation;
 	private JComboBox<String> newPSSCombo;
-	private String[] headers = {"ChartTime","Adrenaline","Airway","Alfentanil","Creatinine (micromoles/L)","CRP (mg/L)","Dobutamine",
-			"FiO2","Glucose (mmol/L)","H (mmol/L)","HR (bpm)","Lactate (mmol/L)","MAP (mmHg)","Morphine","NIBPMean (mmHg)","Noradrenaline",
-			"Platelets (10*9L)","Propofol","PT (seconds)","SpO2","SVO2","Troponin (mg/L)","Urine","VentilatorMode","WBC (10*9L)","PSS","Revised PSS","Notes"};
-	
+//	private String[] headers = {"ChartTime","Adrenaline","Airway","Alfentanil","Creatinine (micromoles/L)","CRP (mg/L)","Dobutamine",
+//			"FiO2","Glucose (mmol/L)","H (mmol/L)","HR (bpm)","Lactate (mmol/L)","MAP (mmHg)","Morphine","NIBPMean (mmHg)","Noradrenaline",
+//			"Platelets (10*9L)","Propofol","PT (seconds)","SpO2","SVO2","Troponin (mg/L)","Urine","VentilatorMode","WBC (10*9L)","Hypothesis","Revised PSS","Notes"};
 //	private String[] headers = {"ChartTime","PSS","Revised PSS","FiO2","SpO2","Adrenaline","Noradrenaline","MAP","NIBPMean",
 //			"HR","Urine","Propofol","Alfentanil","Morphine","VentilatorMode","Airway","H","Lactate",
 //			"SVO2","Creatinine","CRP","WBC","PT","Platelets","Glucose","Troponin","Notes"};
+	private String[] headers = {"Time","Adrenaline","Airway","Alfentanil",
+			"Creatinine (micromoles/L)","CRP (mg/L)","Dobutamine","FiO2",
+			"Glucose (mmol/L)","H (mmol/L)","HR (bpm)","Lactate (mmol/L)",
+			"MAP (mmHg)","Morphine","NIBPMean (mmHg)","Noradrenaline",
+			"Platelets (10*9L)","Propofol","PT (seconds)","SpO2","SVO2",
+			"Troponin (mg/L)","Urine","VentilatorMode","WBC (10*9L)","Hypothesis"};
 	private String thisClinician,currentFile;
 	private int notesCol,revisedPSScol;
 	public Visualiser(String thisC) {

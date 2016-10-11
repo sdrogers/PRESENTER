@@ -23,6 +23,8 @@ public class Record {
 	}
 	public char getPSS() {
 		String temp = (String)getValue("PSS");
+		temp = (String)getValue("Hypothesis");
+		System.out.println(temp);
 		return temp.charAt(0);
 	}
 	public int getMinute()

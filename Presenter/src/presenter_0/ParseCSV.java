@@ -81,13 +81,16 @@ public class ParseCSV {
 			String line = in.readLine(); // Read the headers
 			headers = line.split(",");
 			headList = new ArrayList<String>(Arrays.asList(headers));
+			System.out.println(headList);
 			while((line = in.readLine())!=null)
 			{
+				System.out.println("This is the line");
 				System.out.println(line);
 
 				String[] items = line.split(",");
 				Calendar thisDate = new GregorianCalendar();
 				// Find the index of the 'time' entry
+				System.out.println(headList);
 				int timeIndex = headList.indexOf("Time");
 				PresenterUtilities.formatDate(thisDate,items[timeIndex]);
 				recordList.add(new Record(thisDate));
